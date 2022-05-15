@@ -1,0 +1,10 @@
+cd 
+mkdir compilated_files
+
+python3 -m grpc_tools.protoc -I./proto --python_out=./proto/compilated_files
+--grpc_python_out=. ./image.proto
+
+
+
+
+
