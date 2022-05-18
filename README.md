@@ -16,7 +16,6 @@ In summation, the structure of the gRPC architecture contains the following:
 - [x] Test Client-Server Model
 
 
-     ![brain_gif](https://user-images.githubusercontent.com/62684338/168117172-22e0d149-b3fc-4846-9f55-203544c3190d.gif)
 **********************
 
 ## B. Setup and Installation. 
