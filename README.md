@@ -65,13 +65,10 @@ Note: The provided code places the server at an unsecure local port. This is for
   
  ## E. Discussion.
 * Design Overview.
- mean_filter => function that is implicated to blur an image in order to remove noise. It involves determinign the mean of th pixel values within a n x n kernel. The pixel intensity of the center element is then replaced the mean value. This eliminates some of he noise in the image and smooths the edges of the image. The blur function from the OpenCV library has been included in otder to apply the mean filter to the image. 
-   
+
+mean_filter => function that is implicated to blur an image in order to remove noise. It involves determinign the mean of th pixel values within a n x n kernel. The pixel intensity of the center element is then replaced the mean value. This eliminates some of he noise in the image and smooths the edges of the image. The blur function from the OpenCV library has been included in otder to apply the mean filter to the image. When dealing with color images it is first necessary to convert from RGB to HSV since the dimensions of RGB are dependent on one another where as the three dimensions in HSV are independent of one another (this allows us to apply filters to each of the three dimensions separately.)
 
 
-When dealing with color images it is first necessary to convert from RGB to HSV since the dimensions of RGB are dependent on one another where as the three dimensions in HSV are independent of one another (this allows us to apply filters to each of the three dimensions separately.)
-
-The following is a python implementation of a mean filter:
 
 **********************   
  
