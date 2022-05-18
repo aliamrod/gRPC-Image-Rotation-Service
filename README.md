@@ -103,7 +103,10 @@ Due to time constraints, the following were not implemented. I recommend such im
   In Python however, Streaming RPCs create additional threads for receiving and possibly sending the messages, which makes streaming RPCs much slower than unary RPCs in gRPC Python, unlike the other languages supported by gRPC (e.g., GoLang, C++, Java).
   
   
-  ![1_RDb-hNTukaL0maxTctocXw](https://user-images.githubusercontent.com/62684338/169076270-760cede7-af5e-412c-9e35-64dd91005076.png) Figure 05. Unary Service. 
+  ![1_RDb-hNTukaL0maxTctocXw](https://user-images.githubusercontent.com/62684338/169076270-760cede7-af5e-412c-9e35-64dd91005076.png)     Figure 05. Unary Service. 
+  
+  ![1_53nq8eG7hPtiMfDvnFscAA](https://user-images.githubusercontent.com/62684338/169076673-2a879bb6-12a3-4e33-b5ac-7ac37a1ac632.png)     Figure 06. Server Streaming. Server sends multiple messages to the client via single TCP connection (e.g., server pushing updates to clients periodically).
+
 
   
   An alternative to the unary RPC would be a streaming RPC which would allow multiple chunks of messages to be sent as requests and responses. One of the limitations of the image rotation service is the inability to send over large images in a single message request. A bidirectional streaming RPC would allow the client to break down the image into several messages and send a stream of these messages to the server. The server may then send back the rotated image in a stream of messages as well. This will allow the transfer of large images for the rotation service.
