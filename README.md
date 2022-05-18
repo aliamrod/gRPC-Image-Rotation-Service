@@ -21,7 +21,7 @@ In summation, the structure of the gRPC architecture contains the following:
 **********************
 
 ## B. Setup and Installation. 
-This setup guide assumes the user is using Ubuntu 18.04. 
+This setup guide assumes the user is using <ins>Ubuntu 18.04</ins>. 
  1. Save this directory, and all affiliated files to a desired location.
  2. The Google protobuf compiler (which is a standalone binary named ```protoc```) needs to be installed somewhere on your ```$PATH```. This may be achieved  performing the following Windows-specific operations for installing the binary. * These instructions also install basic ```.proto``` files (i.e. ```wrappers.proto```, ```any.proto```, and ```descriptor.proto```. 
  ```
