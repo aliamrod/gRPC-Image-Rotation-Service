@@ -95,15 +95,41 @@ Future Scope for Improvement.
 
 Due to time constraints, the following were not implemented. I recommend such improvements:
 
-Streaming RPC
-An alternative to the unary RPC would be a streaming RPC which would allow multiple chunks of messages to be sent as requests and responses. One of the limitations of the image rotation service is the inability to send over large images in a single message request. A bidirectional streaming RPC would allow the client to break down the image into several messages and send a stream of these messages to the server. The server may then send back the rotated image in a stream of messages as well. This will allow the transfer of large images for the rotation service.
+* Streaming RPC
+  
+ It is a common misconception that streaming RPCs, 
+  
+  
+  In Python however, Streaming RPCs create additional threads for receiving and possibly sending the messages, which makes streaming RPCs much slower than unary RPCs in gRPC Python, unlike the other languages supported by gRPC (e.g., GoLang, C++, Java).
+  
+  
+  ![1_RDb-hNTukaL0maxTctocXw](https://user-images.githubusercontent.com/62684338/169076270-760cede7-af5e-412c-9e35-64dd91005076.png) Figure 05. Unary Service. 
+
+  
+  An alternative to the unary RPC would be a streaming RPC which would allow multiple chunks of messages to be sent as requests and responses. One of the limitations of the image rotation service is the inability to send over large images in a single message request. A bidirectional streaming RPC would allow the client to break down the image into several messages and send a stream of these messages to the server. The server may then send back the rotated image in a stream of messages as well. This will allow the transfer of large images for the rotation service.
 
 A streaming RPC is unnecessary for the current implementation of the facial recognition service. Because the facial recognition model operates with 30 pixels by 57 pixels greyscale images, all images, regardless of size, is downsampled prior to sending to the server. Therefore, an unary RPC would be sufficient for sending the entire image.
+  
+  It is recommandable to utilize streaming RPCs, when handling a long-lived logical flow of data from the client-to-server, server-to-client, or in both directions. Streams can avoid contiguous RPC initiation, which includes connection load balancing at the client-side, generating a new HTTP/2 request at the transport layer, and invoking a user-defined method handler on the server side. The primary concern however, lies in the notion that streams cannot be load-balanced once they have started and can be hard to debug for stream failures. They also may increase performance at a small, negligible scale but can reduce scalability due to load balancing and complexity, so they should only be used when they provide substantial performance or simplicity benefit to application logic. In summation, streaming RPC is recommendable for the optimization of the Image Rotation Service, not gRPC itself. 
+ 
+ 
+ 
+ * 
+  
+  
 
-Deep learning classification
-Deep learning models, such as Convolutional Neural Networks (CNN), have been proven to outperform PCA and SVM models in facial recognition. The replacement of the PCA and SVM models with a trained CNN may provide both better classification performance and may be more suitable for larger images with greater variability. However, deep learning models are typically computationally expensive and require GPU processing power. Because I am unfamiliar with the build of the testing Linux machine, I opted for the simpler and safer option of PCA and SVM models, which uses Scikit-Learn which can run relatively efficiently on CPU. Installing deep learning libraries and ensuring their compatiability with the machine is another major challenge, and might typically require individual configurations not foreseeable without the machine at hand.
+Using asyncio could improve performance.
 
-Note that with a deep learning model for larger images, a client-streaming RPC, where the client may streaming chunks of messages representing a single image, may be necessary.
+Using the future API in the sync stack results in the creation of an extra thread. Avoid the future API if possible.
+
+(Experimental) An experimental single-threaded unary-stream implementation is available via the SingleThreadedUnaryStream channel option, which can save up to 7% latency per message.
+  
+  
+  
+  
+
+* 
+
 
 Thread pooling
 While the current implementation may be sufficient for a small team of engineers who are not running this service automated or concurrently, this server may be unable to handle high traffic from many requests sent at the same time. Using a large thread pool where a large number of threads is set and made available for concurrent requests would help mitigate this problem. Ideally, in the scenario where all the threads are occupied, additional requests would be queued. However, performance will then be dependent on the number of available processors because more processors would be necessary to handle higher number of threads and concurrent requests.
