@@ -64,11 +64,8 @@ Note: The provided code places the server at an unsecure local port. This is for
  
   
  ## E. Discussion.
- 
- * Design Overview. 
-   
-   
-   mean_filter => function that is implicated to blur an image in order to remove noise. It involves determinign the mean of th pixel values within a n x n kernel. The pixel intensity of the center element is then replaced the mean value. This eliminates some of he noise in the image and smooths the edges of the image. The blur function from the OpenCV library has been included in otder to apply the mean filter to the image. 
+* Design Overview.
+ mean_filter => function that is implicated to blur an image in order to remove noise. It involves determinign the mean of th pixel values within a n x n kernel. The pixel intensity of the center element is then replaced the mean value. This eliminates some of he noise in the image and smooths the edges of the image. The blur function from the OpenCV library has been included in otder to apply the mean filter to the image. 
    
 
 
@@ -81,41 +78,11 @@ The following is a python implementation of a mean filter:
  ## E. Conclusion and Future Scope for Improvement.
  
 Due to time constraints, a more elaborate structure to the gRPC-framework was not implemented. I recommend the following implementations in the future:
-Streaming RPC:
+Streaming RPC.
 
- 
- Other frameworks are recommended over the gRPC modality 
-
-
-
-Future Scope for Improvement.
-
-
-
-
-Due to time constraints, the following were not implemented. I recommend such improvements:
-
-* Streaming RPC
-  An alternative to the current unary RPC would be a bidirectional streaming RPC which allows for multiple requests and consequent responses in chunks. A current plausible limitation to the Image Rotation Service is the inability to process and transmit large images in a single message request 
- It is a common misconception that streaming RPCs, 
-  
-  
-  In Python however, Streaming RPCs create additional threads for receiving and possibly sending the messages, which makes streaming RPCs much slower than unary RPCs in gRPC Python, unlike the other languages supported by gRPC (e.g., GoLang, C++, Java).
-  
-  
-
-
-
-
-A streaming RPC is unnecessary for the current implementation of the facial recognition service. Because the facial recognition model operates with 30 pixels by 57 pixels greyscale images, all images, regardless of size, is downsampled prior to sending to the server. Therefore, an unary RPC would be sufficient for sending the entire image.
-  
-
-Scope for improvement:
-* Thread Pooling: Despite the notion that the current implementation suffices for a small group of Engineers who are not running an automated service, the current server may be unable to handle heavier traffic load from multiple requests. Using a large thread pool where a large number of threads is set and made available for concurrent requests would help mitigate this problem. Ideally, in the scenario where all the threads are occupied, additional requests would be queued. However, performance will then be dependent on the number of available processors because more processors would be necessary to handle higher number of threads and concurrent requests.
-* It has been argued that single-threaded unary-stream implementations (available via the SingleThreadUnaryStream channel option) can save up to 7% latency per message, however this is negligible given that gRPC's average latency for Unary Streams are ~42 milliseconds [1].
-* Bidirectional, Streaming gPRC:   It is recommandable to utilize streaming RPCs, when handling a long-lived logical flow of data from the client-to-server, server-to-client, or in both directions. Streams can avoid contiguous RPC initiation, which includes connection load balancing at the client-side, generating a new HTTP/2 request at the transport layer, and invoking a user-defined method handler on the server side. The streaming RPC would also allow for the decomposition of large images into several messages and sending a stream of these messages to the server. The server will then be able to send back the rotated/filtered image in a stream of concurrent messages as well. 
-
-The primary concern however, lies in the notion that streams cannot be load-balanced once they have started and can be hard to debug for stream failures. They also may increase performance at a small, negligible scale but can reduce scalability due to load balancing and complexity, so they should only be used when they provide substantial performance or simplicity benefit to application logic. In summation, streaming RPC is recommendable for the optimization of the Image Rotation Service, not gRPC itself. An alternative to the unary RPC would be a streaming RPC which would allow multiple chunks of messages to be sent as requests and responses. One of the limitations of the image rotation service is the inability to send over large images in a single message request. A bidirectional streaming RPC would allow the client to break down the image into several messages and send a stream of these messages to the server. The server may then send back the rotated image in a stream of messages as well. This will allow the transfer of large images for the rotation service.
+###Future Scope for Improvement.
+* Thread Pooling: Despite the notion that the current implementation suffices for a small group of Engineers who are not running an automated service, the current server may be unable to handle heavier traffic load from multiple requests. Using a large thread pool where a large number of threads is set and made available for concurrent requests would help mitigate this problem. Ideally, in the scenario where all the threads are occupied, additional requests would be queued. However, performance will then be dependent on the number of available processors because more processors would be necessary to handle higher number of threads and concurrent requests. It has been argued that single-threaded unary-stream implementations (available via the SingleThreadUnaryStream channel option) can save up to 7% latency per message, however this is negligible given that gRPC's average latency for Unary Streams are ~42 milliseconds.
+* Bidirectional, Streaming gPRC:   It is recommandable to utilize streaming RPCs, when handling a long-lived logical flow of data from the client-to-server, server-to-client, or in both directions. Streams can avoid contiguous RPC initiation, which includes connection load balancing at the client-side, generating a new HTTP/2 request at the transport layer, and invoking a user-defined method handler on the server side. The streaming RPC would also allow for the decomposition of large images into several messages and sending a stream of these messages to the server. The server will then be able to send back the rotated/filtered image in a stream of concurrent messages as well. The primary concern however, lies in the notion that streams cannot be load-balanced once they have started and can be hard to debug for stream failures. They also may increase performance at a small, negligible scale but can reduce scalability due to load balancing and complexity, so they should only be used when they provide substantial performance or simplicity benefit to application logic. In summation, streaming RPC is recommendable for the optimization of the Image Rotation Service, not gRPC itself. An alternative to the unary RPC would be a streaming RPC which would allow multiple chunks of messages to be sent as requests and responses. One of the limitations of the image rotation service is the inability to send over large images in a single message request. A bidirectional streaming RPC would allow the client to break down the image into several messages and send a stream of these messages to the server. The server may then send back the rotated image in a stream of messages as well. This will allow the transfer of large images for the rotation service.
 
   ![1_RDb-hNTukaL0maxTctocXw](https://user-images.githubusercontent.com/62684338/169076270-760cede7-af5e-412c-9e35-64dd91005076.png)     Figure 05. Unary Service. 
   
@@ -128,7 +95,4 @@ The primary concern however, lies in the notion that streams cannot be load-bala
 Conclusion.
 It is critical to highlight the advantages obtained by using gRPC as interprocess communication technology, to permit the communication betweenprocesses implemented with different programming protocols. As future work, it would be interesting to investigate alternatives for performing offloading on embedded devices and evaluate their platforms such as Raspberry Pi and Jetson, investigate other technologies such as REST/JSON, and investigate the net energy consumption of those devices.
 
-
-References. 
-"RIC Message Routing". https://docs.o-ran-sc.org/projects/o-ran-sc-ric-plt-lib-rmr/en/latest/index.html#. Date of Access: 18 May, 2022.
 
