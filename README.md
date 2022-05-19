@@ -80,11 +80,11 @@ Streaming RPC.
 
   ![1_RDb-hNTukaL0maxTctocXw](https://user-images.githubusercontent.com/62684338/169076270-760cede7-af5e-412c-9e35-64dd91005076.png)     
   
-  ##### Figure 05. Unary Service.
+   Figure 05. Unary Service.
   
   ![1_53nq8eG7hPtiMfDvnFscAA](https://user-images.githubusercontent.com/62684338/169076673-2a879bb6-12a3-4e33-b5ac-7ac37a1ac632.png)     
   
- ##### Figure 06. Server Streaming. Server sends multiple messages to the client via single TCP connection (e.g., server pushing updates to clients periodically).
+  Figure 06. Server Streaming. Server sends multiple messages to the client via single TCP connection (e.g., server pushing updates to clients periodically).
   
   
 * Image Type Support: The presented server accepts .jpg and .png images. However, implicating that biomedical and neuro-imaging is implicated in some circumstances, additional file format types (e.g., Nifti, .webm, Dicom, Minc). Ultimately an engineered pipeline should be maintainable, extensible, and present a universal data structure. Further testing on additional image types could allow for the gradual accumulation of associated pieces of information which should also provide some data organization-- a more developed server could consider concepts such as pixel depth, photometric interpretation, metadata, and pixel data as well. Image file formats provide a standardized way to store the information descripting an image in a computer file; however, when dealing with medical image data, the sets consists typically of one or more images representing the *projection* of an anatomical volume onto the 2D-image plane. With more time, it would be interesting to carry out the deployment of a server which intakes data from a volumetric image (e.g. produces a dynamic series of acquisitions) and tune the software for the correct loading and visualization.
