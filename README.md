@@ -73,7 +73,7 @@ This service will rotate the input, raw image by a multiple of 90 degrees; stub.
 
  
 #### Mean Filter.
-
+Tis service takes in a numpy matrix (3D for RGB and 2D for Grayscale/non-RGB) and a 3x3 kernel and convolves it in 2D on each frame and divides by the number of neighbors. The returned output is the mean filtered matrix.
 
 **********************   
  
@@ -101,3 +101,6 @@ Streaming RPC.
 ***************
 ## F. Conclusion.
 It is critical to highlight the advantages obtained by using gRPC as interprocess communication technology, to permit the communication betweenprocesses implemented with different programming protocols. As future work, it would be interesting to investigate alternatives for performing offloading on embedded devices and evaluate their platforms such as Raspberry Pi and Jetson, investigate other technologies such as REST/JSON, and investigate the net energy consumption of those devices. With more time, it would also have been interesting to deploy the scripts on the cloud (e.g., Google Compute Engine, AWS interface) coupled with the increase in number of workers peforming in the gRPC server. It would also be intersting to design intermittent experimental apporoaches to evaluate client-server tests latency; that is, aiming to provide the current upper bound of performance for our given language's (Python) client or server implementation. Scenarios under the tests would prospectively look into contentionless latency, QPS, and scalability (the numer of messages/second per sever core).
+
+
+For questions, comments, or concerns, please refer to contact info on home page. 
