@@ -2,39 +2,24 @@
 Author :    Alia Mahama-Rodriguez
 Server for receiving requests and sending responses to clients.
 """
-
+#!/usr/bin/python3
 # concurrent.futures module provides a high-level interface for asynchronously executing callables.
 from concurrent import futures
-from dataclasses import dataclass
-
-import logging
-
-# Import generated files from ./build proto-compiler
 import grpc
-from google.rpc import error_details_pb2
-from grpc_status import rpc_status
-import image_pb2, image_pb2_grpc
-from image_pb2 import(NLImage, NLImageRotateRequest)
-
-
-
-# Import image_processing.py script.
-from image_processing import rotate_image, convert_image_to_NLImage
-
-# Import Threading --> threading will be used to run multiple threads (tasks, function calls) concomitantly.
-import threading
+import argparse
+import logging
+import cv2
 import numpy as np
-from PIL import Image
-from argparse import ArgumentParser
 
-logging.basicConfig(level=logging.INFO)
+import image_pb2_grpc
+from image_pb2 import (
+    NLImage,
+    NLImageRotateRequest,
+)
+
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
-#Options for gRPC server.
-options = [('grpc.max_send_message_length', 512 * 1024 * 1024), ('grpc.max_receive_message_length', 512 * 1024 * 1024)]
-logging.info("Session Start")
 
 class NLImageService(image_pb2_grpc.NLImageServiceServicer):
     def RotateImage(self, request, context):
@@ -47,10 +32,12 @@ class NLImageService(image_pb2_grpc.NLImageServiceServicer):
             NLImageRotateRequest.Rotation.TWO_SEVENTY_DEG : cv2.ROTATE_90_CLOCKWISE,
         }
 
+        # NOTE: np.uint8 won't support images w/ 10-bit color channels
         image_bytes_nparr = np.frombuffer(request.image.data, np.uint8)
         image_cv2 = cv2.imdecode(image_bytes_nparr, cv2.IMREAD_COLOR if 
             request.image.color else cv2.IMREAD_GRAYSCALE)
 
+        # reference: https://avi.im/grpc-errors/#python
         if image_cv2.size == 0:
             context.abort(grpc.StatusCode.INVALID_ARGUMENT,
                 "Image data buffer is too short or contains invalid data")
@@ -78,6 +65,8 @@ class NLImageService(image_pb2_grpc.NLImageServiceServicer):
         image_bytes_nparr = np.frombuffer(nl_image.data, np.uint8)
         image_cv2 = cv2.imdecode(image_bytes_nparr, cv2.IMREAD_COLOR if 
             nl_image.color else cv2.IMREAD_GRAYSCALE)
+
+        # reference: https://avi.im/grpc-errors/#python
         if image_cv2.size == 0:
             context.abort(grpc.StatusCode.INVALID_ARGUMENT,
                 "Image data buffer is too short or contains invalid data")
@@ -89,19 +78,26 @@ class NLImageService(image_pb2_grpc.NLImageServiceServicer):
             height = nl_image.height,
             data = cv2.imencode(".PNG", mean_image)[1].tobytes(),
         )
+    
 
-# '--host' and '--port' arguments that will allocate host and port of sev
 def serve(host, port):
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    image_pb2_grpc.add_NLImageServiceServicer_to_server(NLImageService(), server)
+    # for sake of this project, only one thread is needed 
+    # for this server since there's only one client, 
+    # but with multiple clients I would scale
+    # this up, especially if requests contain large images
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+    image_pb2_grpc.add_NLImageServiceServicer_to_server(
+        NLImageService(), server
+    )
     server.add_insecure_port(f"{host}:{port}")
     server.start()
     logger.info(f"Serving at {host}:{port}")
     server.wait_for_termination()
 
-# `--port` and `--host` arguments that specify the host and port of the server.
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Configure host and port for server")
+    parser = argparse.ArgumentParser(
+        description="Configure host and port for server")
     parser.add_argument("--host",type=str,required=True)
     parser.add_argument("--port",type=int,required=True)
 
