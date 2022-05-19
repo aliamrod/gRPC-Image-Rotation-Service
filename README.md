@@ -73,7 +73,7 @@ This service will rotate the input, raw image by a multiple of 90 degrees; stub.
 
  
 #### Mean Filter.
-Tis service takes in a numpy matrix (3D for RGB and 2D for Grayscale/non-RGB) and a 3x3 kernel and convolves it in 2D on each frame and divides by the number of neighbors. The returned output is the mean filtered matrix.
+The following service takes in a numpy matrix (3D for RGB and 2D for Grayscale/non-RGB) and a 3x3 kernel and convolves it in 2D on each frame and divides by the number of neighbors. The returned output is the mean filtered matrix.
 
 **********************   
  
